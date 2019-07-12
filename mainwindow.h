@@ -26,7 +26,7 @@ private slots:
 
     void on_btnReset_clicked();
 
-    void on_timer_refresh();
+    void timer_refresh();
 private:
     Ui::MainWindow *ui;
 };

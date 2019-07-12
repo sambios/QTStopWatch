@@ -1,18 +1,19 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
     m_timerRefresh = new QTimer(this);
-    m_timerRefresh->connect(m_timerRefresh, SIGNAL(timeout()), this, SLOT(on_timer_refresh()));
+
+    m_timerRefresh->connect(m_timerRefresh, SIGNAL(timeout()), this, SLOT(timer_refresh()));
     m_timerRefresh->setInterval(10);
     ui->lcdNumber->setDecMode();
     ui->lcdNumber->setDigitCount(12);
     ui->lcdNumber->setSegmentStyle(QLCDNumber::Flat);
+    setWindowTitle("StopWatch");
 
 }
 
@@ -35,10 +36,10 @@ void MainWindow::on_btnStop_clicked()
 
 void MainWindow::on_btnReset_clicked()
 {
-    ui->lcdNumber->display("0:0:000");
+    ui->lcdNumber->display("0");
 }
 
-void MainWindow::on_timer_refresh()
+void MainWindow::timer_refresh()
 {
     QString text;
     auto t = m_stopWatch.elapsed<fdrtsp::milliseconds>();
@@ -48,12 +49,8 @@ void MainWindow::on_timer_refresh()
     if (t >= 1000) sec = (t % 60000) / 1000;
     msec = t % 1000;
 
-    char fmtstr[256];
-    sprintf(fmtstr, "%u:%.2u:%.2u:%.3u", hour, minute, sec, msec);
-    //text = QString("%1:%2:%3:%4").arg(hour,2).arg(minute,2).arg(sec).arg(msec,3);
-    printf("time:%s\n", fmtstr);
-    text = fmtstr;
+    text = QString("%1:%2:%3:%4").arg(hour).arg(minute, 2, 10, QChar('0')).
+            arg(sec, 2, 10, QChar('0')).arg(msec, 3, 10, QChar('0'));
 
     ui->lcdNumber->display(text);
-    //std::cout << m_stopWatch.elapsed() << std::endl;
 }
